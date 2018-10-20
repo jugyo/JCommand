@@ -1,7 +1,7 @@
 {
     "name": "jcommand",
     "displayName": "JCommand",
-    "description": "VSCode Extention to run and manage shell commands",
+    "description": "VSCode Extension to run and manage shell commands",
     "version": "0.0.1",
     "publisher": "jugyo",
     "engines": {
