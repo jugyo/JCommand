@@ -16,4 +16,4 @@ Example of `~/.vscode/jcommand.json`:
 ]
 ```
 
-`%` will be replace with active file path
+`%` will be replace with the active file path or empty string when no active file
