@@ -48,6 +48,8 @@ const jcommand = {
       const activeFile = await getActiveFilePath();
       if (activeFile) {
         command = command.replace("%", activeFile);
+      } else {
+        command = command.replace("%", "");
       }
       runInTerminal(command);
     }
