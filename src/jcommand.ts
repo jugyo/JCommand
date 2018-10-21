@@ -54,8 +54,6 @@ const jcommand = {
     const data = await fs.readFile(commandFilePath, "utf8");
     const commands = JSON.parse(data) as string[];
     const items = commands.sort((a, b) => getIndex(a) - getIndex(b));
-    console.log(history);
-    console.log(items);
 
     let command = await vscode.window.showQuickPick(items);
 
