@@ -2,7 +2,7 @@
     "name": "jcommand",
     "displayName": "JCommand",
     "description": "VSCode Extension to run and manage shell commands",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "jugyo",
     "repository": "https://github.com/jugyo/JCommand",
     "engines": {
