@@ -26,6 +26,18 @@ const getActiveFilePath = () => {
   }
 };
 
+const history: string[] = [];
+const historyLimit = 10;
+const updateHistory = (command: string) => {
+  history.splice(historyLimit, history.length - historyLimit);
+  history.unshift(command);
+};
+
+const getIndex = (command: string) => {
+  const index = history.indexOf(command);
+  return index >= 0 ? index : Number.POSITIVE_INFINITY;
+};
+
 const jcommand = {
   edit: async () => {
     if (!fs.existsSync(commandFilePath)) {
@@ -40,18 +52,20 @@ const jcommand = {
 
   run: async () => {
     const data = await fs.readFile(commandFilePath, "utf8");
-    const commands = JSON.parse(data);
-    console.log(commands);
-    let command = await vscode.window.showQuickPick(commands);
+    const commands = JSON.parse(data) as string[];
+    const items = commands.sort((a, b) => getIndex(a) - getIndex(b));
+    console.log(history);
+    console.log(items);
+
+    let command = await vscode.window.showQuickPick(items);
 
     if (command) {
       const activeFile = await getActiveFilePath();
-      if (activeFile) {
-        command = command.replace("%", activeFile);
-      } else {
-        command = command.replace("%", "");
-      }
-      runInTerminal(command);
+      const commandWithActiveFile = activeFile
+        ? command.replace("%", activeFile)
+        : command.replace("%", "");
+      runInTerminal(commandWithActiveFile);
+      updateHistory(command);
     }
   }
 };
