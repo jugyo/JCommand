@@ -11,8 +11,9 @@ Example of `~/.vscode/jcommand.json`:
 
 ```json
 [
-  "yarn mocha -r ts-node/register %",
-  "spring rspec %"
+  "yarn mocha -r ts-node/register %f",
+  "spring rspec %f",
+  "npm run %s",
 ]
 ```
 

@@ -12,7 +12,7 @@ const template = `
 const terminalName = "JCommand";
 const runInTerminal = (command: string) => {
   const terminal =
-    vscode.window.terminals.find(t => t.name === terminalName) ||
+    vscode.window.terminals.find((t) => t.name === terminalName) ||
     vscode.window.createTerminal(terminalName);
 
   terminal.show();
@@ -23,6 +23,17 @@ const getActiveFilePath = () => {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     return vscode.workspace.asRelativePath(editor.document.fileName, false);
+  }
+};
+
+const getSelectedText = () => {
+  const editor = vscode.window.activeTextEditor;
+  if (editor) {
+    const selection = editor.selection;
+    const selectedText = editor.document.getText(selection);
+    if (selectedText.length > 0) {
+      return selectedText;
+    }
   }
 };
 
@@ -40,7 +51,7 @@ const getIndex = (command: string) => {
 
 const jcommand = {
   edit: async () => {
-    if (!fs.existsSync(commandFilePath)) {
+    if (!fs.pathExistsSync(commandFilePath)) {
       await fs.outputFile(commandFilePath, template);
     }
 
@@ -59,13 +70,19 @@ const jcommand = {
 
     if (command) {
       const activeFile = await getActiveFilePath();
-      const commandWithActiveFile = activeFile
-        ? command.replace("%", activeFile)
-        : command.replace("%", "");
+      let commandWithActiveFile = activeFile
+        ? command.replace("%f", activeFile)
+        : command.replace("%f", "");
+
+      const selectedText = getSelectedText();
+      commandWithActiveFile = selectedText
+        ? commandWithActiveFile.replace("%s", selectedText)
+        : commandWithActiveFile.replace("%s", "");
+
       runInTerminal(commandWithActiveFile);
       updateHistory(command);
     }
-  }
+  },
 };
 
 export default jcommand;
