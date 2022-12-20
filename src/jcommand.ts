@@ -95,7 +95,7 @@ const jcommand = {
 
       const command = createCommand(template, {
         "%f": activeFile || "",
-        "%l": lineNumber ? lineNumber.toString() : "",
+        "%l": lineNumber !== undefined ? (lineNumber + 1).toString() : "",
         "%s": selectedText || "",
       });
 
