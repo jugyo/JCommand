@@ -37,6 +37,13 @@ const getSelectedText = () => {
   }
 };
 
+const getLineNumber = () => {
+  const editor = vscode.window.activeTextEditor;
+  if (editor) {
+    return editor.selection.active.line;
+  }
+};
+
 const history: string[] = [];
 const historyLimit = 10;
 const updateHistory = (command: string) => {
@@ -47,6 +54,19 @@ const updateHistory = (command: string) => {
 const getIndex = (command: string) => {
   const index = history.indexOf(command);
   return index >= 0 ? index : Number.POSITIVE_INFINITY;
+};
+
+const createCommand = (template: string, params: { [key: string]: string }) => {
+  let command = template;
+  for (const key in params) {
+    const value = params[key];
+    if (value !== undefined && value !== null) {
+      command = command.replace(key, value);
+    } else {
+      command = command.replace(key, "");
+    }
+  }
+  return command;
 };
 
 const jcommand = {
@@ -66,21 +86,21 @@ const jcommand = {
     const commands = JSON.parse(data) as string[];
     const items = commands.sort((a, b) => getIndex(a) - getIndex(b));
 
-    let command = await vscode.window.showQuickPick(items);
+    let template = await vscode.window.showQuickPick(items);
 
-    if (command) {
+    if (template) {
       const activeFile = await getActiveFilePath();
-      let commandWithActiveFile = activeFile
-        ? command.replace("%f", activeFile)
-        : command.replace("%f", "");
-
+      const lineNumber = getLineNumber();
       const selectedText = getSelectedText();
-      commandWithActiveFile = selectedText
-        ? commandWithActiveFile.replace("%s", selectedText)
-        : commandWithActiveFile.replace("%s", "");
 
-      runInTerminal(commandWithActiveFile);
-      updateHistory(command);
+      const command = createCommand(template, {
+        "%f": activeFile || "",
+        "%l": lineNumber ? lineNumber.toString() : "",
+        "%s": selectedText || "",
+      });
+
+      runInTerminal(command);
+      updateHistory(template);
     }
   },
 };
