@@ -37,10 +37,12 @@ const getSelectedText = () => {
   }
 };
 
-const getLineNumber = () => {
+const getLineRange = () => {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
-    return editor.selection.active.line;
+    return [editor.selection.start.line, editor.selection.end.line];
+  } else {
+    return [];
   }
 };
 
@@ -90,12 +92,14 @@ const jcommand = {
 
     if (template) {
       const activeFile = await getActiveFilePath();
-      const lineNumber = getLineNumber();
+      const lineRange = getLineRange();
       const selectedText = getSelectedText();
 
       const command = createCommand(template, {
         "%f": activeFile || "",
-        "%l": lineNumber !== undefined ? (lineNumber + 1).toString() : "",
+        "%ls": lineRange[0] !== undefined ? (lineRange[0] + 1).toString() : "",
+        "%le": lineRange[1] !== undefined ? (lineRange[1] + 1).toString() : "",
+        "%l": lineRange[0] !== undefined ? (lineRange[0] + 1).toString() : "",
         "%s": selectedText || "",
       });
 
