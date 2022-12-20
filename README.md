@@ -14,7 +14,7 @@ Example of `~/.vscode/jcommand.json`:
   "yarn mocha -r ts-node/register %f",
   "spring rspec %f",
   "npm run %s",
-  "gh browse %f:%ls-%le --branch `git symbolic-ref --short HEAD`
+  "gh browse %f:%ls-%le --branch `git symbolic-ref --short HEAD # Browse on GitHub`
 ]
 ```
 

@@ -71,6 +71,24 @@ const createCommand = (template: string, params: { [key: string]: string }) => {
   return command;
 };
 
+function toQuickPickItem(
+  item: string
+): vscode.QuickPickItem & { template: string } {
+  const match = item.match(/#\s*(.*)\s*/);
+  if (match) {
+    return {
+      label: match[1],
+      description: item,
+      template: item,
+    };
+  } else {
+    return {
+      label: item,
+      template: item,
+    };
+  }
+}
+
 const jcommand = {
   edit: async () => {
     if (!fs.pathExistsSync(commandFilePath)) {
@@ -87,10 +105,11 @@ const jcommand = {
     const data = await fs.readFile(commandFilePath, "utf8");
     const commands = JSON.parse(data) as string[];
     const items = commands.sort((a, b) => getIndex(a) - getIndex(b));
+    const quickPickItems = items.map(toQuickPickItem);
 
-    let template = await vscode.window.showQuickPick(items);
-
-    if (template) {
+    const selected = await vscode.window.showQuickPick(quickPickItems);
+    if (selected) {
+      const template = selected.template;
       const activeFile = await getActiveFilePath();
       const lineRange = getLineRange();
       const selectedText = getSelectedText();
